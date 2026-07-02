@@ -10,6 +10,8 @@ from fastapi import (
     status,
 )
 
+from app.services.parser import DocumentParser 
+
 from app.config import UPLOAD_DIR
 
 router = APIRouter(
@@ -79,6 +81,8 @@ async def upload_document(file: UploadFile = File(...)):
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+        parsed_document = DocumentParser.extract_text(file_path)
+
     except Exception as e:
         # Remove partially written file if it exists
         if file_path.exists():
@@ -94,12 +98,13 @@ async def upload_document(file: UploadFile = File(...)):
 
     return {
         "success": True,
-        "message": "File uploaded successfully.",
+        "message": "File uploaded and parsed successfully.",
         "data": {
             "document_id": document_id,
             "original_filename": file.filename,
             "stored_filename": stored_filename,
             "file_size_bytes": file_size,
             "file_type": extension,
+            "parsed_document": parsed_document.model_dump(), 
         },
     }
