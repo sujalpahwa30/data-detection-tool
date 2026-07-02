@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+
+.env
+
+uploads/*
+analysis/*
+chroma_db/*
+
+!.gitkeep
